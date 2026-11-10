@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Portfólio de Desenhos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav a {
+      color: #fff;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .container {
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .galeria {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .card-desenho {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      text-align: center;
+      padding-bottom: 15px;
+    }
+    .card-desenho img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Nome do Seu Atelier / Marca</h1>
+    <nav>
+      <a href="#home">Início</a>
+      <a href="#loja">Desenhos / Vendas</a>
+      <a href="#estilos">Estilos</a>
+      <a href="#sobre">Sobre Mim</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <section id="loja">
+      <h2>Galeria & Vendas</h2>
+      <div class="galeria">
+        <!-- Exemplo de item do portfólio -->
+        <div class="card-desenho">
+          <img src="https://via.placeholder.com/300" alt="Desenho 1">
+          <h3>Desenho Ilustração Digital</h3>
+          <p>Status: Disponível</p>
+          <button>Ver Detalhes / Comprar</button>
+        </div>
+        <div class="card-desenho">
+          <img src="https://via.placeholder.com/300" alt="Desenho 2">
+          <h3>Retrato em Grafite</h3>
+          <p>Status: Apenas Exemplo</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</body>
+</html>
