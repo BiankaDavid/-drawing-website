@@ -3,15 +3,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estilos | Meu Portfólio</title>
- <link rel="stylesheet" href="style.css">
- 
+  <title>Estilos & Comissões | Atelier Bianka</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #admin-panel {
+      display: none;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+    }
+    #image-preview {
+      max-width: 100%;
+      max-height: 200px;
+      margin-top: 10px;
+      display: none;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    button {
+      background: #585858;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      opacity: 0.85;
+    }
+    .btn-danger {
+      background: #c0392b;
+      margin-top: 10px;
+      width: 100%;
+    }
+    .btn-logout {
+      background: #666;
+      float: right;
+    }
+    .caixa-secao {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .status-badge {
+      display: inline-block;
+      background: #27ae60;
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .status-abertas { background-color: #27ae60; }
+    .status-poucas { background-color: #f39c12; }
+    .status-fechadas { background-color: #c0392b; }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      margin-top: 50px;
+      border-top: 1px solid #ddd;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    #login-box {
+      display: none;
+      max-width: 300px;
+      margin: 10px auto 0;
+      text-align: left;
+    }
+    .toggle-login {
+      background: none;
+      color: #666;
+      text-decoration: underline;
+      padding: 0;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+    }
+    .admin-divider {
+      border: 0;
+      border-top: 1px solid #eee;
+      margin: 20px 0;
+    }
   </style>
 </head>
 <body>
 
+  <!-- CABEÇALHO COM O MENU ORIGINAL -->
   <header>
-    <h1>Nome do Seu Atelier / Marca</h1>
+    <h1>Atelier Bianka</h1>
     <nav>
       <a href="index.html">Início</a>
       <a href="galeria.html">Desenhos / Vendas</a>
@@ -20,14 +125,308 @@
     </nav>
   </header>
 
-  <div class="container">
-    <h2>Meus Estilos e Técnicas</h2>
-    <ul>
-      <li><strong>Ilustração Digital:</strong> Desenhos feitos em tablet profissional.</li>
-      <li><strong>Desenho em Grafite:</strong> Sombreamento realista feito no papel.</li>
-      <li><strong>Aquarela:</strong> Pinturas tradicionais cheias de cor.</li>
-    </ul>
+  <!-- PAINEL DE ADMINISTRAÇÃO (Aparece quando você faz login) -->
+  <div id="admin-panel">
+    <button class="btn-logout" id="btn-logout">Sair</button>
+    <h2>Gerenciar Comissões</h2>
+
+    <!-- ALTERAR STATUS -->
+    <div class="form-group" style="background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #eee;">
+      <label for="status-select">Status Atual das Encomendas:</label>
+      <div style="display: flex; gap: 10px;">
+        <select id="status-select">
+          <option value="abertas">Status: Comissões Abertas</option>
+          <option value="poucas">Status: Poucas Vagas Disponíveis</option>
+          <option value="fechadas">Status: Comissões Fechadas</option>
+        </select>
+        <button type="button" id="btn-save-status">Salvar Status</button>
+      </div>
+    </div>
+
+    <hr class="admin-divider">
+
+    <!-- ADICIONAR NOVA OPÇÃO DE COMISSÃO -->
+    <h3>Adicionar Opção de Comissão</h3>
+    <form id="add-comm-form">
+      <div class="form-group">
+        <label>Tipo de Encomenda (Ex: Busto Colorido, Corpo Inteiro)</label>
+        <input type="text" id="comm-title" placeholder="Ex: Retrato / Busto" required>
+      </div>
+      <div class="form-group">
+        <label>Imagem de Exemplo (Da sua galeria)</label>
+        <input type="file" id="comm-file" accept="image/*" required>
+        <img id="image-preview" alt="Pré-visualização">
+      </div>
+      <div class="form-group">
+        <label>O que está incluído / Prazo</label>
+        <textarea id="comm-desc" rows="3" placeholder="Ex: Pintura digital completa, fundo simples. Prazo: 5 a 7 dias." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Valor Inicial</label>
+        <input type="text" id="comm-price" placeholder="A partir de R$ 80 / $20 USD" required>
+      </div>
+      <button type="submit" id="btn-submit">Publicar Opção de Comissão</button>
+    </form>
   </div>
 
+  <!-- CONTEÚDO PRINCIPAL -->
+  <div class="container">
+    
+    <!-- PARTE 1 (EM CIMA): DESCRIÇÃO DOS ESTILOS -->
+    <section class="caixa-secao">
+      <h2>Meus Estilos</h2>
+      <p>
+        Aqui você pode descrever os estilos artísticos com os quais trabalha — por exemplo: 
+        ilustração digital semirrealista, estilizado/anime, estudos em aquarela ou arte linear (lineart). 
+        Explique o foco do seu traço, as paletas de cores que costuma usar e as inspirações por trás das suas peças.
+      </p>
+    </section>
+
+    <!-- PARTE 2 (ABAIXO): COMISSÕES E TABELA DE VALORES -->
+    <section class="caixa-secao">
+      <span class="status-badge status-abertas" id="public-status-badge">Carregando status...</span>
+      <h2>Comissões & Encomendas</h2>
+      <p>
+        Quer uma arte personalizada do seu personagem, retrato ou ideia original? 
+        Confira abaixo os formatos e valores disponíveis. Para fazer seu pedido, entre em contato enviando referências da sua ideia!
+      </p>
+      <p><strong>Como funciona:</strong> 50% no início do rascunho e 50% na entrega final em alta resolução.</p>
+    </section>
+
+    <h2>Opções de Comissão</h2>
+    <div class="galeria" id="commissions-list">
+      <p style="text-align:center; grid-column: 1/-1;">Carregando opções de comissão...</p>
+    </div>
+
+  </div>
+
+  <!-- RODAPÉ -->
+  <footer>
+    <p>&copy; 2026 Atelier Bianka. Todos os direitos reservados.</p>
+    <button class="toggle-login" id="show-login-btn">Área do Artista</button>
+
+    <div id="login-box">
+      <form id="login-form">
+        <div class="form-group" style="margin-top: 10px;">
+          <input type="email" id="admin-email" placeholder="E-mail" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="admin-password" placeholder="Senha" required>
+        </div>
+        <button type="submit" style="width:100%;">Entrar</button>
+      </form>
+    </div>
+  </footer>
+
+  <!-- SCRIPT DO FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBDLijY4RRRcFE5ot5hHk-e_VVrMgCwoSE",
+      authDomain: "atelier-bianka.firebaseapp.com",
+      projectId: "atelier-bianka",
+      storageBucket: "atelier-bianka.firebasestorage.app",
+      messagingSenderId: "191058593517",
+      appId: "1:191058593517:web:4c4aaaef3cd1bcc586eee4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const listEl = document.getElementById('commissions-list');
+    const adminPanel = document.getElementById('admin-panel');
+    const loginBox = document.getElementById('login-box');
+    const showLoginBtn = document.getElementById('show-login-btn');
+    const fileInput = document.getElementById('comm-file');
+    const imagePreview = document.getElementById('image-preview');
+    const statusBadge = document.getElementById('public-status-badge');
+    const statusSelect = document.getElementById('status-select');
+    
+    let isAdmin = false;
+    let compressedBase64Image = "";
+
+    const statusConfig = {
+      abertas: { text: "Status: Comissões Abertas", className: "status-abertas" },
+      poucas: { text: "Status: Poucas Vagas Disponíveis", className: "status-poucas" },
+      fechadas: { text: "Status: Comissões Fechadas", className: "status-fechadas" }
+    };
+
+    async function loadCommissionStatus() {
+      try {
+        const statusDoc = await getDoc(doc(db, "config", "comissoes"));
+        let currentStatus = "abertas";
+        
+        if (statusDoc.exists() && statusDoc.data().status) {
+          currentStatus = statusDoc.data().status;
+        }
+
+        applyStatusUI(currentStatus);
+        statusSelect.value = currentStatus;
+      } catch (error) {
+        applyStatusUI("abertas");
+      }
+    }
+
+    function applyStatusUI(statusKey) {
+      const config = statusConfig[statusKey] || statusConfig.abertas;
+      statusBadge.textContent = config.text;
+      statusBadge.className = `status-badge ${config.className}`;
+    }
+
+    document.getElementById('btn-save-status').addEventListener('click', async () => {
+      const selected = statusSelect.value;
+      const btn = document.getElementById('btn-save-status');
+      btn.disabled = true;
+      btn.textContent = "Salvando...";
+
+      try {
+        await setDoc(doc(db, "config", "comissoes"), { status: selected });
+        applyStatusUI(selected);
+        alert("Status atualizado com sucesso!");
+      } catch (error) {
+        alert("Erro ao atualizar status: " + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Salvar Status";
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const scaleSize = MAX_WIDTH / img.width;
+          canvas.width = img.width > MAX_WIDTH ? MAX_WIDTH : img.width;
+          canvas.height = img.width > MAX_WIDTH ? img.height * scaleSize : img.height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          compressedBase64Image = canvas.toDataURL('image/jpeg', 0.75);
+          imagePreview.src = compressedBase64Image;
+          imagePreview.style.display = 'block';
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    showLoginBtn.addEventListener('click', () => {
+      loginBox.style.display = loginBox.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await signInWithEmailAndPassword(auth, document.getElementById('admin-email').value, document.getElementById('admin-password').value);
+        loginBox.style.display = 'none';
+      } catch (error) {
+        alert("Erro ao entrar: Verifique seus dados.");
+      }
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        isAdmin = true;
+        adminPanel.style.display = 'block';
+        showLoginBtn.style.display = 'none';
+      } else {
+        isAdmin = false;
+        adminPanel.style.display = 'none';
+        showLoginBtn.style.display = 'inline';
+      }
+      loadCommissionStatus();
+      loadCommissions();
+    });
+
+    document.getElementById('add-comm-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!compressedBase64Image) {
+        alert("Por favor, selecione uma imagem de exemplo.");
+        return;
+      }
+
+      const btnSubmit = document.getElementById('btn-submit');
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = "Publicando...";
+
+      try {
+        await addDoc(collection(db, "comissoes"), {
+          title: document.getElementById('comm-title').value,
+          imageUrl: compressedBase64Image,
+          description: document.getElementById('comm-desc').value,
+          price: document.getElementById('comm-price').value,
+          createdAt: serverTimestamp()
+        });
+        
+        document.getElementById('add-comm-form').reset();
+        imagePreview.style.display = 'none';
+        compressedBase64Image = "";
+        loadCommissions();
+        alert("Opção de comissão publicada!");
+      } catch (error) {
+        alert("Erro ao publicar: " + error.message);
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = "Publicar Opção de Comissão";
+      }
+    });
+
+    async function loadCommissions() {
+      listEl.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Carregando...</p>';
+      try {
+        const querySnapshot = await getDocs(collection(db, "comissoes"));
+
+        if (querySnapshot.empty) {
+          listEl.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Nenhuma opção de comissão cadastrada ainda.</p>';
+          return;
+        }
+
+        listEl.innerHTML = '';
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const card = document.createElement('div');
+          card.className = 'card-desenho';
+          card.innerHTML = `
+            <div>
+              <img src="${data.imageUrl || 'https://via.placeholder.com/300'}" alt="${data.title || 'Comissão'}">
+              <div style="padding: 15px;">
+                <h3 style="margin: 0 0 10px 0;">${data.title || 'Estilo'}</h3>
+                <p style="margin: 0 0 10px 0; color: #555;">${data.description || ''}</p>
+                <p style="margin: 0; font-weight: bold; color: #222;">${data.price || ''}</p>
+              </div>
+            </div>
+            ${isAdmin ? `<div style="padding: 0 15px 15px;"><button class="btn-danger" data-id="${docSnap.id}">Excluir Opção</button></div>` : ''}
+          `;
+          listEl.appendChild(card);
+        });
+
+        if (isAdmin) {
+          document.querySelectorAll('.btn-danger').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              if (confirm("Deseja excluir esta opção de comissão?")) {
+                await deleteDoc(doc(db, "comissoes", e.target.getAttribute('data-id')));
+                loadCommissions();
+              }
+            });
+          });
+        }
+      } catch (error) {
+        listEl.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: red;">Erro ao carregar: ${error.message}</p>`;
+      }
+    }
+  </script>
 </body>
 </html>

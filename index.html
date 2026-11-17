@@ -3,43 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu Portfólio de Desenhos</title>
+  <title>Início | Atelier Bianka</title>
   <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
 
   <header>
-  <h1>Nome do Seu Atelier / Marca</h1>
-
-  <nav>
-    <a href="index.html">Início</a>
-    <a href="galeria.html">Desenhos / Vendas</a>
-    <a href="estilos.html">Estilos</a>
-    <a href="sobre.html">Sobre Mim</a>
-  </nav>
-
-</header>
+    <h1>Atelier Bianka</h1>
+    <nav>
+      <a href="index.html">Início</a>
+      <a href="galeria.html">Desenhos / Vendas</a>
+      <a href="estilos.html">Estilos</a>
+      <a href="sobre.html">Sobre Mim</a>
+    </nav>
+  </header>
 
   <div class="container">
-    <section id="loja">
-      <h2>Galeria & Vendas</h2>
-      <div class="galeria">
-        <!-- Exemplo de item do portfólio -->
-        <div class="card-desenho">
-          <img src="https://via.placeholder.com/300" alt="Desenho 1">
-          <h3>Desenho Ilustração Digital</h3>
-          <p>Status: Disponível</p>
-          <button>Ver Detalhes / Comprar</button>
-        </div>
-        <div class="card-desenho">
-          <img src="https://via.placeholder.com/300" alt="Desenho 2">
-          <h3>Retrato em Grafite</h3>
-          <p>Status: Apenas Exemplo</p>
-        </div>
-      </div>
-    </section>
+    
+    <!-- RESUMO DO ATELIER COM BOTÃO PARA COMISSÕES -->
+    <div>
+      <h2>Bem-vindo ao Atelier Bianka</h2>
+      <p>
+        Aqui você encontra ilustrações originais, estudos artísticos e encomendas personalizadas feitas com dedicação. 
+        Explore os trabalhos publicados abaixo ou faça sua encomenda personalizada.
+      </p>
+      <a href="estilos.html" style="display: inline-block; background-color: #585858; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; margin-top: 5px;">
+        Pedir Comissão
+      </a>
+    </div>
+
+    <hr style="margin: 25px 0; border: 0; border-top: 1px solid #ddd;">
+
+    <!-- VITRINE SIMPLIFICADA (Puxa do Firebase apenas a imagem e o nome) -->
+    <h2>Obras Publicadas</h2>
+    <div class="galeria" id="home-gallery">
+      <p>Carregando obras...</p>
+    </div>
+
   </div>
 
+  <footer style="text-align: center; padding: 20px; margin-top: 40px;">
+    <p>&copy; 2026 Atelier Bianka. Todos os direitos reservados.</p>
+  </footer>
+
+  <!-- SCRIPT PARA PUXAR OS DESENHOS DO FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBDLijY4RRRcFE5ot5hHk-e_VVrMgCwoSE",
+      authDomain: "atelier-bianka.firebaseapp.com",
+      projectId: "atelier-bianka",
+      storageBucket: "atelier-bianka.firebasestorage.app",
+      messagingSenderId: "191058593517",
+      appId: "1:191058593517:web:4c4aaaef3cd1bcc586eee4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const homeGalleryEl = document.getElementById('home-gallery');
+
+    async function loadHomeArtworks() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "obras"));
+
+        if (querySnapshot.empty) {
+          homeGalleryEl.innerHTML = '<p>Nenhuma obra publicada ainda.</p>';
+          return;
+        }
+
+        homeGalleryEl.innerHTML = '';
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          
+          const card = document.createElement('div');
+          card.className = 'card-desenho';
+          
+          card.innerHTML = `
+            <a href="galeria.html" style="text-decoration: none; color: inherit;">
+              <img src="${data.imageUrl || 'https://via.placeholder.com/300'}" alt="${data.title || 'Obra'}">
+              <h3>${data.title || 'Sem título'}</h3>
+            </a>
+          `;
+          
+          homeGalleryEl.appendChild(card);
+        });
+      } catch (error) {
+        homeGalleryEl.innerHTML = '<p>Erro ao carregar obras.</p>';
+      }
+    }
+
+    loadHomeArtworks();
+  </script>
 </body>
 </html>

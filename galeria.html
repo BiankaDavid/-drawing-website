@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Galeria & Vendas | Meu Portfólio</title>
-   <link rel="stylesheet" href="style.css">
+  <title>Galeria & Vendas | Atelier Bianka</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <link rel="stylesheet" href="admstyle.css">
    
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Nome do Seu Atelier / Marca</h1>
+    <h1>Atelier Bianka</h1>
     <nav>
       <a href="index.html">Início</a>
       <a href="galeria.html">Desenhos / Vendas</a>
@@ -20,22 +22,222 @@
     </nav>
   </header>
 
+  <!-- PAINEL DE ADMINISTRAÇÃO -->
+  <div id="admin-panel">
+    <button class="btn-logout" id="btn-logout">Sair</button>
+    <h2>Adicionar Novo Desenho</h2>
+    <form id="add-art-form">
+      <div class="form-group">
+        <label>Título</label>
+        <input type="text" id="art-title" placeholder="Ex: Ilustração Digital" required>
+      </div>
+      <div class="form-group">
+        <label>Selecionar Imagem</label>
+        <input type="file" id="art-file" accept="image/*" required>
+        <img id="image-preview" alt="Pré-visualização">
+      </div>
+      <div class="form-group">
+        <label>Descrição / Status</label>
+        <textarea id="art-desc" rows="2" placeholder="Ex: Disponível - A4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Preço</label>
+        <input type="text" id="art-price" placeholder="$120 USD" required>
+      </div>
+      <button type="submit" id="btn-submit">Publicar Desenho</button>
+    </form>
+  </div>
+
+  <!-- CONTEÚDO PRINCIPAL -->
   <div class="container">
     <h2>Galeria & Vendas</h2>
-    <div class="galeria">
-      <div class="card-desenho">
-        <img src="https://via.placeholder.com/300" alt="Desenho 1">
-        <h3>Ilustração Digital</h3>
-        <p>Status: Disponível</p>
-        <button>Ver Detalhes / Comprar</button>
-      </div>
-      <div class="card-desenho">
-        <img src="https://via.placeholder.com/300" alt="Desenho 2">
-        <h3>Retrato em Grafite</h3>
-        <p>Status: Apenas Exemplo</p>
-      </div>
+    <div class="galeria" id="gallery">
+      <p style="text-align:center; grid-column: 1/-1;">Carregando obras...</p>
     </div>
   </div>
 
+  <!-- RODAPÉ -->
+  <footer>
+    <p>&copy; 2026 Atelier Bianka. Todos os direitos reservados.</p>
+    <button class="toggle-login" id="show-login-btn">Área do Artista</button>
+
+    <div id="login-box">
+      <form id="login-form">
+        <div class="form-group" style="margin-top: 10px;">
+          <input type="email" id="admin-email" placeholder="E-mail" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="admin-password" placeholder="Senha" required>
+        </div>
+        <button type="submit" style="width:100%;">Entrar</button>
+      </form>
+    </div>
+  </footer>
+
+  <!-- SCRIPT DO FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBDLijY4RRRcFE5ot5hHk-e_VVrMgCwoSE",
+      authDomain: "atelier-bianka.firebaseapp.com",
+      projectId: "atelier-bianka",
+      storageBucket: "atelier-bianka.firebasestorage.app",
+      messagingSenderId: "191058593517",
+      appId: "1:191058593517:web:4c4aaaef3cd1bcc586eee4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const galleryEl = document.getElementById('gallery');
+    const adminPanel = document.getElementById('admin-panel');
+    const loginBox = document.getElementById('login-box');
+    const showLoginBtn = document.getElementById('show-login-btn');
+    const fileInput = document.getElementById('art-file');
+    const imagePreview = document.getElementById('image-preview');
+    
+    let isAdmin = false;
+    let compressedBase64Image = "";
+
+    // Mostrar pré-visualização e comprimir a imagem selecionada
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          // Redimensiona para no máximo 800px de largura mantendo a proporção
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const scaleSize = MAX_WIDTH / img.width;
+          canvas.width = img.width > MAX_WIDTH ? MAX_WIDTH : img.width;
+          canvas.height = img.width > MAX_WIDTH ? img.height * scaleSize : img.height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          // Converte para JPEG com 75% de qualidade (fica super leve e nítido)
+          compressedBase64Image = canvas.toDataURL('image/jpeg', 0.75);
+          
+          imagePreview.src = compressedBase64Image;
+          imagePreview.style.display = 'block';
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    showLoginBtn.addEventListener('click', () => {
+      loginBox.style.display = loginBox.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await signInWithEmailAndPassword(auth, document.getElementById('admin-email').value, document.getElementById('admin-password').value);
+        loginBox.style.display = 'none';
+      } catch (error) {
+        alert("Erro ao entrar: Verifique seus dados.");
+      }
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        isAdmin = true;
+        adminPanel.style.display = 'block';
+        showLoginBtn.style.display = 'none';
+      } else {
+        isAdmin = false;
+        adminPanel.style.display = 'none';
+        showLoginBtn.style.display = 'inline';
+      }
+      loadArtworks();
+    });
+
+    document.getElementById('add-art-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!compressedBase64Image) {
+        alert("Por favor, selecione uma imagem da sua galeria.");
+        return;
+      }
+
+      const btnSubmit = document.getElementById('btn-submit');
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = "Publicando...";
+
+      try {
+        await addDoc(collection(db, "obras"), {
+          title: document.getElementById('art-title').value,
+          imageUrl: compressedBase64Image,
+          description: document.getElementById('art-desc').value,
+          price: document.getElementById('art-price').value,
+          createdAt: serverTimestamp()
+        });
+        
+        document.getElementById('add-art-form').reset();
+        imagePreview.style.display = 'none';
+        compressedBase64Image = "";
+        loadArtworks();
+        alert("Desenho publicado com sucesso!");
+      } catch (error) {
+        alert("Erro ao publicar: " + error.message);
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = "Publicar Desenho";
+      }
+    });
+
+    async function loadArtworks() {
+      galleryEl.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Carregando...</p>';
+      try {
+        const querySnapshot = await getDocs(collection(db, "obras"));
+
+        if (querySnapshot.empty) {
+          galleryEl.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Nenhuma obra publicada ainda.</p>';
+          return;
+        }
+
+        galleryEl.innerHTML = '';
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const card = document.createElement('div');
+          card.className = 'card-desenho';
+          card.innerHTML = `
+            <div>
+              <img src="${data.imageUrl || 'https://via.placeholder.com/300'}" alt="${data.title || 'Obra'}">
+              <div style="padding: 15px;">
+                <h3 style="margin: 0 0 10px 0;">${data.title || 'Sem título'}</h3>
+                <p style="margin: 0 0 10px 0; color: #555;">${data.description || ''}</p>
+                <p style="margin: 0; font-weight: bold;">${data.price || ''}</p>
+              </div>
+            </div>
+            ${isAdmin ? `<div style="padding: 0 15px 15px;"><button class="btn-danger" data-id="${docSnap.id}">Excluir Obra</button></div>` : ''}
+          `;
+          galleryEl.appendChild(card);
+        });
+
+        if (isAdmin) {
+          document.querySelectorAll('.btn-danger').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              if (confirm("Deseja excluir este desenho?")) {
+                await deleteDoc(doc(db, "obras", e.target.getAttribute('data-id')));
+                loadArtworks();
+              }
+            });
+          });
+        }
+      } catch (error) {
+        galleryEl.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: red;">Erro ao carregar galeria: ${error.message}</p>`;
+      }
+    }
+  </script>
 </body>
 </html>
